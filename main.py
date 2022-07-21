@@ -12,21 +12,22 @@ url = "https://www.bellingcat.com/workshops"
 session = HTMLSession()
 response = session.get(url)
 
+fnot = open("/home/scattanach1/bellingcat-webscraper/events/notifications.txt", "r")
+contents = fnot.readlines()
+
 events = response.html.find('.event__content')
 event_candidates = []
 for event in events:
-    
     candidate = event.text
-    
+
+    candidate_found = False
+
     # read list of events for which notifications have already been sent
     # if notification was already sent, skip
-    candidate_found = False
-    with open("/home/scattanach1/bellingcat-webscraper/events/notifications.txt", "r") as f:
-        contents = f.readlines()
-        for line in contents:
-            if line.strip() == candidate.split('\n')[0].strip():
-                candidate_found = True
-                break
+    for line in contents:
+        if line.strip() == candidate.split('\n')[0].strip():
+            candidate_found = True
+            break
 
     if candidate_found:
         print("notification already sent - skipping")
@@ -72,9 +73,9 @@ if len(event_candidates) > 0:
     smtpobj.quit()
 
     # append to the "already notified" file
-    with open("/home/scattanach1/bellingcat-webscraper/events/notifications.txt", "a") as f:
+    with open("/home/scattanach1/bellingcat-webscraper/events/notifications.txt", "a") as f2:
         lines_to_write = [candidate.split('\n')[0] + '\n' for candidate in event_candidates]
-        f.writelines(lines_to_write)
+        f2.writelines(lines_to_write)
         
 
 
