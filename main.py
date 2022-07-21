@@ -68,6 +68,8 @@ if len(event_candidates) > 0:
     message = 'Subject: {}\n\n{}'.format(subject, message_raw)
     smtpobj.starttls()
 
+    message = message.encode("utf-8")
+    
     smtpobj.login(from_email,key)
     smtpobj.sendmail(from_email, to_email, message)
     smtpobj.quit()
